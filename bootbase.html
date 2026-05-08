@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BootBase — The Football Boot Encyclopedia</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0f0d;
+    --bg2: #161714;
+    --bg3: #1e1f1c;
+    --card: #1a1b18;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.15);
+    --lime: #c8f135;
+    --lime2: #a8d420;
+    --red: #ff4444;
+    --orange: #ff8c00;
+    --text: #f0f0ec;
+    --muted: #888880;
+    --muted2: #555550;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+  /* NAV */
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:14px 24px; display:flex; gap:8px; background:rgba(14,15,13,0.85); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+  .nav-tab { background:none; border:1px solid var(--border2); color:var(--muted); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; padding:7px 16px; border-radius:20px; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+  .nav-tab:hover { color:var(--text); border-color:var(--border2); }
+  .nav-tab.active { background:var(--lime); color:#0e0f0d; border-color:var(--lime); font-weight:600; }
+
+  /* PAGES */
+  .page { display:none; min-height:100vh; padding-top:60px; }
+  .page.active { display:block; }
+
+  /* FLOATING BOOT TEXTURE */
+  .float-texture { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .float-boot { position:absolute; opacity:0.04; font-size:32px; animation:floatBoot linear infinite; filter:grayscale(1); }
+  @keyframes floatBoot {
+    0% { transform: translateY(110vh) rotate(var(--rot)); }
+    100% { transform: translateY(-10vh) rotate(var(--rot)); }
+  }
+
+  /* LOGIN PAGE */
+  #page-login { display:flex; align-items:center; justify-content:center; background:radial-gradient(ellipse at 30% 40%, #1a2000 0%, var(--bg) 60%); }
+  .login-card { background:var(--card); border:1px solid var(--border2); border-radius:20px; padding:48px 44px; width:400px; text-align:center; position:relative; z-index:1; }
+  .login-logo { font-family:'Bebas Neue',sans-serif; font-size:48px; letter-spacing:2px; }
+  .login-logo span { color:var(--lime); }
+  .login-sub { font-size:11px; letter-spacing:4px; color:var(--muted); margin-bottom:32px; text-transform:uppercase; }
+  .login-divider { border:none; border-top:1px solid var(--border); margin:28px 0; }
+  .google-btn { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; padding:13px; background:#fff; color:#000; border:none; border-radius:10px; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s; font-family:'DM Sans',sans-serif; }
+  .google-btn:hover { background:#f0f0f0; transform:translateY(-1px); }
+  .google-btn svg { width:20px; height:20px; }
+  .login-terms { font-size:11px; color:var(--muted2); margin-top:16px; }
+
+  /* HOME PAGE */
+  #page-home { background:radial-gradient(ellipse at 70% 20%, #1a2000 0%, var(--bg) 50%); }
+  .hero { position:relative; z-index:1; text-align:center; padding:80px 24px 60px; }
+  .hero-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(200,241,53,0.1); border:1px solid rgba(200,241,53,0.3); color:var(--lime); font-size:11px; letter-spacing:3px; text-transform:uppercase; padding:6px 16px; border-radius:20px; margin-bottom:28px; }
+  .hero h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(52px,8vw,96px); line-height:1; letter-spacing:2px; margin-bottom:16px; }
+  .hero h1 span { color:var(--lime); }
+  .hero-desc { font-size:16px; color:var(--muted); max-width:400px; margin:0 auto 40px; }
+  .search-wrap { position:relative; max-width:520px; margin:0 auto 20px; }
+  .search-wrap input { width:100%; background:var(--card); border:1px solid var(--border2); color:var(--text); font-family:'DM Sans',sans-serif; font-size:15px; padding:16px 52px 16px 20px; border-radius:12px; outline:none; transition:border-color 0.2s; }
+  .search-wrap input:focus { border-color:var(--lime); }
+  .search-wrap input::placeholder { color:var(--muted2); }
+  .search-btn { position:absolute; right:14px; top:50%; transform:translateY(-50%); background:var(--lime); border:none; border-radius:8px; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .search-btn svg { width:16px; height:16px; color:#0e0f0d; }
+  .quick-tags { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:50px; }
+  .quick-tag { background:var(--bg3); border:1px solid var(--border); color:var(--muted); font-size:12px; padding:5px 12px; border-radius:20px; cursor:pointer; transition:all 0.2s; }
+  .quick-tag:hover, .quick-tag.hot { color:var(--text); border-color:var(--border2); }
+  .quick-tag.hot { color:var(--lime); border-color:rgba(200,241,53,0.4); }
+  .stats-row { display:flex; justify-content:center; gap:48px; flex-wrap:wrap; padding:0 24px 60px; position:relative; z-index:1; }
+  .stat { text-align:center; }
+  .stat-num { font-family:'Bebas Neue',sans-serif; font-size:42px; color:var(--lime); letter-spacing:1px; }
+  .stat-label { font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); }
+  .section-title { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:2px; padding:0 24px 20px; }
+
+  /* BOOT GRID */
+  .boot-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; padding:0 24px 80px; max-width:1400px; margin:0 auto; position:relative; z-index:1; }
+  .boot-card { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; cursor:pointer; transition:all 0.25s; }
+  .boot-card:hover { border-color:var(--border2); transform:translateY(-3px); box-shadow:0 12px 32px rgba(0,0,0,0.4); }
+  .boot-img-wrap { aspect-ratio:1; background:var(--bg3); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+  .boot-img-wrap img { width:90%; height:90%; object-fit:contain; transition:transform 0.3s; }
+  .boot-card:hover .boot-img-wrap img { transform:scale(1.05); }
+  .boot-img-placeholder { font-size:48px; opacity:0.3; }
+  .boot-info { padding:12px; }
+  .boot-brand { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:3px; }
+  .boot-name { font-weight:600; font-size:13px; line-height:1.3; margin-bottom:8px; }
+  .boot-rating { display:flex; align-items:center; gap:6px; }
+  .rating-num { font-family:'Space Mono',monospace; font-size:18px; font-weight:700; color:var(--lime); }
+  .rating-bar { flex:1; height:3px; background:var(--bg3); border-radius:2px; overflow:hidden; }
+  .rating-fill { height:100%; background:var(--lime); border-radius:2px; transition:width 0.5s; }
+  .boot-tags { display:flex; gap:4px; flex-wrap:wrap; margin-top:8px; }
+  .boot-tag { background:var(--bg3); color:var(--muted); font-size:10px; padding:2px 7px; border-radius:8px; }
+
+  /* BOOT PAGE */
+  #page-boot { background:var(--bg); }
+  .boot-detail { max-width:900px; margin:0 auto; padding:32px 24px 80px; }
+  .boot-detail-header { display:grid; grid-template-columns:260px 1fr; gap:32px; margin-bottom:32px; }
+  .boot-detail-img { background:var(--bg3); border:1px solid var(--border); border-radius:16px; aspect-ratio:1; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .boot-detail-img img { width:85%; height:85%; object-fit:contain; }
+  .boot-category { font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--lime); margin-bottom:6px; }
+  .boot-detail-name { font-family:'Bebas Neue',sans-serif; font-size:52px; line-height:1; letter-spacing:2px; margin-bottom:12px; }
+  .boot-detail-rating { display:flex; align-items:baseline; gap:8px; margin-bottom:6px; }
+  .big-rating { font-family:'Space Mono',monospace; font-size:56px; font-weight:700; color:var(--lime); }
+  .rating-context { color:var(--muted); font-size:14px; }
+  .boot-detail-desc { color:var(--muted); font-size:14px; line-height:1.7; margin-bottom:16px; }
+  .detail-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+  .detail-tag { background:var(--bg3); border:1px solid var(--border); color:var(--text); font-size:12px; padding:5px 12px; border-radius:8px; }
+  .add-review-btn { display:inline-flex; align-items:center; gap:8px; background:var(--lime); color:#0e0f0d; border:none; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; padding:11px 22px; border-radius:10px; cursor:pointer; transition:all 0.2s; }
+  .add-review-btn:hover { background:var(--lime2); transform:translateY(-1px); }
+  .pros-cons { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:28px; }
+  .pc-box { background:var(--card); border-radius:12px; padding:20px; }
+  .pc-box.pros { border-left:3px solid #4ade80; }
+  .pc-box.cons { border-left:3px solid var(--red); }
+  .pc-title { font-weight:600; font-size:14px; margin-bottom:12px; }
+  .pros .pc-title { color:#4ade80; }
+  .cons .pc-title { color:var(--red); }
+  .pc-list { list-style:none; }
+  .pc-list li { font-size:13px; color:var(--muted); padding:4px 0; padding-left:14px; position:relative; line-height:1.4; }
+  .pros .pc-list li::before { content:'•'; position:absolute; left:0; color:#4ade80; }
+  .cons .pc-list li::before { content:'•'; position:absolute; left:0; color:var(--red); }
+
+  /* RATINGS PAGE */
+  #page-ratings { background:var(--bg); }
+  .ratings-wrap { max-width:900px; margin:0 auto; padding:32px 24px 80px; }
+  .ratings-title { font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:24px; }
+  .perf-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:40px; }
+  .perf-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:20px; }
+  .perf-card-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; }
+  .vote-btn { background:var(--lime); color:#0e0f0d; border:none; font-family:'DM Sans',sans-serif; font-size:11px; font-weight:700; padding:4px 10px; border-radius:6px; cursor:pointer; transition:all 0.2s; }
+  .vote-btn:hover { background:var(--lime2); }
+  .bar-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .bar-label { font-size:12px; color:var(--muted); width:90px; flex-shrink:0; }
+  .bar-track { flex:1; height:8px; background:var(--bg3); border-radius:4px; overflow:hidden; cursor:pointer; }
+  .bar-fill { height:100%; border-radius:4px; transition:width 0.4s ease; }
+  .comfort-fill { background:linear-gradient(90deg, #4ade80, #22c55e); }
+  .fit-fill { background:linear-gradient(90deg, #fb923c, #ef4444); }
+  .durability-fill { background:linear-gradient(90deg, #60a5fa, #3b82f6); }
+  .thickness-fill { background:linear-gradient(90deg, #c084fc, #a855f7); }
+  .bar-count { font-size:11px; color:var(--muted); width:28px; text-align:right; font-family:'Space Mono',monospace; }
+  .vote-modal { display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.75); align-items:center; justify-content:center; }
+  .vote-modal.open { display:flex; }
+  .vote-modal-inner { background:var(--card); border:1px solid var(--border2); border-radius:16px; padding:32px; width:360px; }
+  .vote-modal-title { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:1px; margin-bottom:20px; }
+  .vote-option { display:flex; align-items:center; gap:12px; padding:10px 0; cursor:pointer; border-bottom:1px solid var(--border); transition:all 0.2s; }
+  .vote-option:last-child { border-bottom:none; }
+  .vote-option:hover .vote-radio { border-color:var(--lime); }
+  .vote-option input[type=radio] { display:none; }
+  .vote-radio { width:20px; height:20px; border-radius:50%; border:2px solid var(--muted2); display:flex; align-items:center; justify-content:center; transition:all 0.2s; flex-shrink:0; }
+  .vote-radio.checked { background:var(--lime); border-color:var(--lime); }
+  .vote-radio.checked::after { content:''; width:8px; height:8px; border-radius:50%; background:#0e0f0d; }
+  .vote-option-label { font-size:14px; }
+  .vote-submit { width:100%; background:var(--lime); color:#0e0f0d; border:none; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; padding:13px; border-radius:10px; cursor:pointer; margin-top:20px; transition:all 0.2s; }
+  .vote-submit:hover { background:var(--lime2); }
+  .vote-cancel { width:100%; background:none; border:1px solid var(--border2); color:var(--muted); font-family:'DM Sans',sans-serif; font-size:13px; padding:10px; border-radius:10px; cursor:pointer; margin-top:8px; }
+  .carousel-section { margin-top:16px; }
+  .carousel-title { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:16px; }
+  .carousel-wrap { position:relative; }
+  .carousel { display:flex; gap:16px; overflow-x:auto; scroll-behavior:smooth; scrollbar-width:none; padding-bottom:4px; }
+  .carousel::-webkit-scrollbar { display:none; }
+  .carousel-arrow { position:absolute; top:50%; transform:translateY(-50%); background:var(--card); border:1px solid var(--border2); color:var(--text); border-radius:50%; width:36px; height:36px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:2; transition:all 0.2s; font-size:16px; }
+  .carousel-arrow:hover { background:var(--lime); color:#0e0f0d; }
+  .carousel-arrow.left { left:-18px; }
+  .carousel-arrow.right { right:-18px; }
+  .carousel-card { flex:0 0 160px; background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; cursor:pointer; transition:all 0.2s; }
+  .carousel-card:hover { border-color:var(--border2); transform:translateY(-2px); }
+  .carousel-card-img { aspect-ratio:1; background:var(--bg3); display:flex; align-items:center; justify-content:center; }
+  .carousel-card-img img { width:80%; height:80%; object-fit:contain; }
+  .carousel-card-info { padding:8px 10px; }
+  .carousel-card-brand { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); }
+  .carousel-card-name { font-size:12px; font-weight:600; line-height:1.3; }
+  .back-btn { display:inline-flex; align-items:center; gap:8px; color:var(--muted); font-size:13px; cursor:pointer; margin-bottom:24px; transition:color 0.2s; background:none; border:none; font-family:'DM Sans',sans-serif; }
+  .back-btn:hover { color:var(--text); }
+  .search-results { background:var(--card); border:1px solid var(--border2); border-radius:12px; position:absolute; top:calc(100% + 8px); left:0; right:0; z-index:50; overflow:hidden; max-height:320px; overflow-y:auto; }
+  .search-result-item { display:flex; align-items:center; gap:12px; padding:12px 16px; cursor:pointer; transition:background 0.15s; border-bottom:1px solid var(--border); }
+  .search-result-item:last-child { border-bottom:none; }
+  .search-result-item:hover { background:var(--bg3); }
+  .search-result-img { width:44px; height:44px; background:var(--bg3); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; }
+  .search-result-img img { width:90%; height:90%; object-fit:contain; }
+  .search-result-info { flex:1; }
+  .search-result-brand { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--lime); }
+  .search-result-name { font-size:13px; font-weight:500; }
+  .filter-btn { background:var(--bg3); border:1px solid var(--border); color:var(--muted); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500; padding:5px 12px; border-radius:8px; cursor:pointer; transition:all 0.2s; }
+  .filter-btn:hover { color:var(--text); border-color:var(--border2); }
+  .filter-btn.active { background:rgba(200,241,53,0.15); border-color:rgba(200,241,53,0.5); color:var(--lime); }
+  @media (max-width:600px) {
+    .boot-detail-header { grid-template-columns:1fr; }
+    .pros-cons { grid-template-columns:1fr; }
+    .perf-grid { grid-template-columns:1fr; }
+    .boot-detail-name { font-size:36px; }
+    .big-rating { font-size:40px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating boot texture -->
+<div class="float-texture" id="floatTexture"></div>
+
+<!-- Navigation -->
+<nav>
+  <button class="nav-tab active" onclick="showPage('login')">① Login</button>
+  <button class="nav-tab" onclick="showPage('home')">② Home</button>
+  <button class="nav-tab" id="bootTabBtn" style="display:none" onclick="showPage('boot')">③ Boot page</button>
+  <button class="nav-tab" id="ratingsTabBtn" style="display:none" onclick="showPage('ratings')">④ Ratings + carousel</button>
+</nav>
+
+<!-- LOGIN PAGE -->
+<div class="page active" id="page-login">
+  <div class="login-card">
+    <div class="login-logo">Boot<span>Base</span></div>
+    <div class="login-sub">The Football Boot Encyclopedia</div>
+    <hr class="login-divider">
+    <button class="google-btn" onclick="doLogin()">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Continue with Google
+    </button>
+    <p class="login-terms">By continuing you agree to our terms</p>
+  </div>
+</div>
+
+<!-- HOME PAGE -->
+<div class="page" id="page-home">
+  <div class="hero">
+    <div class="hero-badge">Trusted by Boot Enthusiasts</div>
+    <h1>The <span>ultimate</span> boot<br>encyclopedia</h1>
+    <p class="hero-desc">Search, rate, and discover football boots</p>
+    <div class="search-wrap" id="searchWrap">
+      <input type="text" id="searchInput" placeholder="Nike Phantom, Adidas Predator…" oninput="handleSearch(this.value)" autocomplete="off">
+      <button class="search-btn" onclick="handleSearch(document.getElementById('searchInput').value)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+      <div class="search-results" id="searchResults" style="display:none"></div>
+    </div>
+    <div class="quick-tags">
+      <span class="quick-tag hot" onclick="filterBoots('Nike Phantom GX')">🔥 Nike Phantom GX</span>
+      <span class="quick-tag" onclick="filterBoots('Adidas Predator Elite')">Adidas Predator Elite</span>
+      <span class="quick-tag" onclick="filterBoots('Puma King Platinum')">Puma King Platinum</span>
+      <span class="quick-tag" onclick="filterBoots('New Balance Furon')">NB Furon v7</span>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-num">4,200+</div><div class="stat-label">Boots</div></div>
+    <div class="stat"><div class="stat-num">89K</div><div class="stat-label">Reviews</div></div>
+    <div class="stat"><div class="stat-num">31K</div><div class="stat-label">Members</div></div>
+  </div>
+  <div style="max-width:1400px;margin:0 auto;position:relative;z-index:1;padding:0 24px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+      <div class="section-title" id="gridTitle" style="padding:0;margin:0">All Boots</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <span style="font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Filter:</span>
+        <button class="filter-btn active" data-filter="all" onclick="applyFilter('all',this)">All</button>
+        <button class="filter-btn" data-filter="Speed" onclick="applyFilter('Speed',this)">Speed</button>
+        <button class="filter-btn" data-filter="Control" onclick="applyFilter('Control',this)">Control</button>
+        <button class="filter-btn" data-filter="Power" onclick="applyFilter('Power',this)">Power</button>
+        <span style="font-size:12px;color:var(--muted);margin-left:8px;letter-spacing:1px;text-transform:uppercase">Sort:</span>
+        <select id="sortSelect" onchange="applySort()" style="background:var(--bg3);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:5px 10px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;outline:none">
+          <option value="default">Featured</option>
+          <option value="rating_desc">Rating ↓</option>
+          <option value="rating_asc">Rating ↑</option>
+          <option value="weight_asc">Lightest</option>
+          <option value="name_asc">A → Z</option>
+        </select>
+        <span id="bootCount" style="font-size:12px;color:var(--muted);letter-spacing:1px"></span>
+      </div>
+    </div>
+  </div>
+  <div style="max-width:1400px;margin:0 auto;position:relative;z-index:1;">
+    <div class="boot-grid" id="bootGrid"></div>
+  </div>
+</div>
+
+<!-- BOOT DETAIL PAGE -->
+<div class="page" id="page-boot">
+  <div class="boot-detail" id="bootDetail"></div>
+</div>
+
+<!-- RATINGS PAGE -->
+<div class="page" id="page-ratings">
+  <div class="ratings-wrap" id="ratingsWrap"></div>
+</div>
+
+<!-- Vote Modal -->
+<div class="vote-modal" id="voteModal">
+  <div class="vote-modal-inner">
+    <div class="vote-modal-title" id="voteModalTitle">Rate Comfort</div>
+    <div id="voteOptions"></div>
+    <button class="vote-submit" onclick="submitVote()">Submit Vote</button>
+    <button class="vote-cancel" onclick="closeVoteModal()">Cancel</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// BOOT DATABASE — 50 boots
+// ============================================================
+const BOOTS = [
+  { id:1, brand:'Nike', line:'Speed', name:'Phantom GX Elite', rating:4.1, ratings:238, weight:'185g', soleplate:'FG/AG', fit:'Laceless', upper:'Gripknit', year:2023, desc:'A precision-focused boot for technical players. The Gripknit upper texture enhances ball control in wet and dry conditions. Extremely thin upper for maximum ball feel.', tags:['FG/AG','Laceless','185g','Thin upper'], pros:['Exceptional ball feel','Ultra-lightweight at 185g','Aggressive stud pattern'], cons:['Very narrow — bad for wide feet','Upper wears quickly','Expensive for what it offers'], img:'https://i.imgur.com/HfpFMmB.png', color:'purple', similar:[2,5,8,9,11] },
+  { id:2, brand:'Nike', line:'Speed', name:'Mercurial Superfly 10 Elite', rating:4.3, ratings:412, weight:'185g', soleplate:'FG', fit:'Dynamic Fit Collar', upper:'Flyknit', year:2024, desc:'The ultimate speed boot. Lightweight Flyknit construction wraps the foot for a second-skin feel while the ACC coating ensures consistent touch in all weather conditions.', tags:['FG','Dynamic Collar','185g','ACC'], pros:['Incredible speed feel','Premium Flyknit upper','Excellent traction'], cons:['Collar can irritate ankle','Very narrow fit','Premium price tag'], img:'https://i.imgur.com/vP9Ky8Q.png', color:'orange', similar:[1,5,9,12,15] },
+  { id:3, brand:'Adidas', line:'Power', name:'Predator Elite', rating:4.0, ratings:189, weight:'215g', soleplate:'FG', fit:'Standard', upper:'Textile+Rubber', year:2024, desc:'The Predator returns with innovative rubber texture zones across the upper for unmatched grip and control. Wide fit makes it suitable for broader feet.', tags:['FG','Wide','215g','Control zones'], pros:['Superior ball control','Wide fit','Durable construction'], cons:['Heavier than competitors','Chunky aesthetic','Rubber zones crack over time'], img:'https://i.imgur.com/QNxdJHr.png', color:'red', similar:[4,6,16,19,22] },
+  { id:4, brand:'Adidas', line:'Speed', name:'X Crazyfast.1', rating:4.2, ratings:301, weight:'170g', soleplate:'FG', fit:'Standard', upper:'Speedframe', year:2023, desc:'Adidas lightest ever boot. The minimal Speedframe upper provides a barely-there feel while the Speedportal outsole delivers maximum sprint traction.', tags:['FG','170g','Speed','Minimal'], pros:['Lightest Adidas ever','Excellent sprint traction','Great lockdown'], cons:['Minimal protection','Durability concerns','Very narrow toe box'], img:'https://i.imgur.com/Lbd8XlK.png', color:'yellow', similar:[2,5,9,15,17] },
+  { id:5, brand:'Nike', line:'Speed', name:'Mercurial Vapor 16 Elite', rating:4.4, ratings:527, weight:'190g', soleplate:'FG/MG', fit:'Standard', upper:'Flyknit', year:2024, desc:'The standard bearer for speed boots. Refined Flyknit upper with improved ACC delivers a benchmark ball feel while the Aerotrac outsole provides elite traction geometry.', tags:['FG/MG','190g','ACC','Speed'], pros:['Best in class ball feel','All-surface capable','Proven traction pattern'], cons:['Standard fit may slip','Premium pricing','Color options limited'], img:'https://i.imgur.com/TiHoSiZ.png', color:'green', similar:[1,2,4,9,12] },
+  { id:6, brand:'Adidas', line:'Control', name:'Copa Pure.1', rating:4.5, ratings:634, weight:'200g', soleplate:'FG', fit:'Wide', upper:'Kangaroo Leather', year:2023, desc:'The pinnacle of leather football boots. Premium kangaroo leather upper molds perfectly to the foot after break-in, delivering legendary touch that synthetics cannot match.', tags:['FG','Leather','Wide','200g'], pros:['Unmatched leather touch','Molds to foot perfectly','Classic styling'], cons:['Requires break-in period','Leather care needed','Not for wet conditions'], img:'https://i.imgur.com/nWmgdwE.png', color:'brown', similar:[3,7,16,20,25] },
+  { id:7, brand:'Puma', line:'Control', name:'King Platinum 21', rating:4.2, ratings:198, weight:'210g', soleplate:'FG', fit:'Wide', upper:'K-Leather', year:2023, desc:'Puma revives the iconic King silhouette with premium kangaroo leather and modern traction technology. Wide toe box suits players who prefer room in the front foot.', tags:['FG','K-Leather','Wide','210g'], pros:['Premium leather quality','Wide comfortable fit','Classic look'], cons:['Heavy at 210g','Limited colorways','Expensive for leather'], img:'https://i.imgur.com/tLBpVN7.png', color:'gold', similar:[6,16,20,24,30] },
+  { id:8, brand:'Puma', line:'Speed', name:'Future 7 Ultimate', rating:4.1, ratings:156, weight:'195g', soleplate:'FG/AG', fit:'FUZIONFIT+', upper:'FUZIONFIT', year:2024, desc:'Puma\'s adaptive collar system creates a custom lockdown for every player. The netfit lace system allows fully customized lacing patterns to suit your foot shape perfectly.', tags:['FG/AG','FUZIONFIT','195g','Adaptive'], pros:['Incredible ankle lockdown','Custom lacing system','Adaptive upper'], cons:['Complex lacing takes time','FUZIONFIT can be too tight','Polarizing design'], img:'https://i.imgur.com/8bgMGiv.png', color:'pink', similar:[1,2,5,11,13] },
+  { id:9, brand:'Nike', line:'Speed', name:'Phantom GX Academy', rating:3.8, ratings:445, weight:'215g', soleplate:'FG/MG', fit:'Standard', upper:'Flyknit', year:2023, desc:'The entry level in the Phantom GX range brings the iconic Gripknit feel to a wider audience with a more durable and affordable construction.', tags:['FG/MG','215g','Entry','Value'], pros:['Great value','Gripknit traction','Durable build'], cons:['Not as responsive as Elite','Heavier upper','Basic soleplate'], img:'https://i.imgur.com/vP9Ky8Q.png', color:'blue', similar:[1,2,5,12,15] },
+  { id:10, brand:'New Balance', line:'Speed', name:'Furon v7 Pro', rating:4.0, ratings:167, weight:'200g', soleplate:'FG', fit:'Standard', upper:'Knitted', year:2023, desc:'New Balance continues to impress with the Furon v7. Updated knitted upper with improved lateral support and revised stud geometry for better directional change.', tags:['FG','200g','Knitted','NB'], pros:['Excellent lateral support','Good width options','Underrated brand quality'], cons:['Limited retailer availability','Less trendy','Average ball feel'], img:'https://i.imgur.com/TiHoSiZ.png', color:'teal', similar:[4,8,11,13,18] },
+  { id:11, brand:'Nike', line:'Speed', name:'Tiempo Legend 10 Elite', rating:4.3, ratings:289, weight:'195g', soleplate:'FG', fit:'Standard', upper:'Premium Leather', year:2024, desc:'Nike\'s premium leather boot combines the soft touch of premium calf leather with modern performance technology. The Heritage Zone on the strike area enhances ball manipulation.', tags:['FG','Leather','195g','Heritage'], pros:['Superb touch quality','Classic elegant design','Great lockdown'], cons:['Leather requires care','Wetter conditions affect touch','High price'], img:'https://i.imgur.com/nWmgdwE.png', color:'navy', similar:[6,7,16,20,24] },
+  { id:12, brand:'Nike', line:'Speed', name:'Mercurial Superfly 10 Pro', rating:4.0, ratings:312, weight:'195g', soleplate:'FG', fit:'Dynamic Fit Collar', upper:'Flyknit', year:2024, desc:'The Pro version brings most of the Elite\'s technologies at a more accessible price point. Dynamic Fit collar and ACC coating remain across the range.', tags:['FG','Collar','195g','Mid-range'], pros:['Great collar feel','ACC in all conditions','Excellent speed feel'], cons:['Not as responsive as Elite','Fewer color options','Soleplate slightly heavier'], img:'https://i.imgur.com/vP9Ky8Q.png', color:'crimson', similar:[2,5,1,4,9] },
+  { id:13, brand:'Puma', line:'Speed', name:'Ultra Ultimate', rating:4.2, ratings:201, weight:'175g', soleplate:'FG/AG', fit:'Standard', upper:'evoKNIT Pro', year:2023, desc:'Puma\'s flagship speed boot is one of the lightest on the market. The evoKNIT Pro upper wraps the foot in a second skin while the SpeedUnit outsole delivers explosive traction.', tags:['FG/AG','175g','Speed','Knitted'], pros:['Ultra-lightweight','Great knitted upper','Explosive traction'], cons:['Durability concerns','Very narrow','Heel can slip'], img:'https://i.imgur.com/Lbd8XlK.png', color:'electric-blue', similar:[2,4,5,8,10] },
+  { id:14, brand:'Mizuno', line:'Control', name:'Morelia Neo IV', rating:4.6, ratings:143, weight:'175g', soleplate:'FG', fit:'Wide', upper:'Kangaroo Leather', year:2023, desc:'The holy grail for leather boot enthusiasts. Ultra-thin Japanese kangaroo leather on one of the lightest boots ever made. The Neo IV is the pinnacle of natural material performance footwear.', tags:['FG','K-Leather','175g','Japan'], pros:['World class leather touch','Incredibly lightweight','Premium Japanese craftsmanship'], cons:['Very expensive','Hard to find','Requires extensive break-in'], img:'https://i.imgur.com/HfpFMmB.png', color:'blue-white', similar:[6,7,11,16,20] },
+  { id:15, brand:'Adidas', line:'Speed', name:'X Speedportal.1', rating:3.9, ratings:278, weight:'180g', soleplate:'FG', fit:'Standard', upper:'Speedskin', year:2022, desc:'The previous generation X Speed continues to be popular for its value and performance. Speedskin upper provides a consistent touch surface in all weather conditions.', tags:['FG','180g','Speedskin','Previous Gen'], pros:['Great value now','Consistent touch','Good traction'], cons:['Replaced by newer model','Upper durability','Limited colors'], img:'https://i.imgur.com/Lbd8XlK.png', color:'yellow', similar:[4,2,5,13,17] },
+  { id:16, brand:'Adidas', line:'Control', name:'Copa Mundial', rating:4.8, ratings:1203, weight:'230g', soleplate:'FG', fit:'Wide', upper:'Kangaroo Leather', year:1979, desc:'The most iconic football boot ever made. The Copa Mundial has been worn by legends across 5 decades. Classic K-leather upper with two-piece outsole remains virtually unchanged since 1979.', tags:['FG','Classic','K-Leather','Icon'], pros:['Timeless classic','Perfect leather feel','Extremely durable'], cons:['Heavy by modern standards','No modern tech','Expensive for age'], img:'https://i.imgur.com/nWmgdwE.png', color:'classic', similar:[6,7,11,14,20] },
+  { id:17, brand:'Adidas', line:'Speed', name:'X Crazyfast Club', rating:3.5, ratings:567, weight:'205g', soleplate:'FG/MG', fit:'Standard', upper:'Mesh', year:2023, desc:'The entry-level option in the Crazyfast range. Budget-friendly with a mesh upper and simplified soleplate, perfect for grassroots players wanting the Crazyfast aesthetic.', tags:['FG/MG','Budget','205g','Entry'], pros:['Very affordable','Lightweight design','Good for grassroots'], cons:['Basic mesh upper','Less responsive','Average soleplate'], img:'https://i.imgur.com/Lbd8XlK.png', color:'yellow-black', similar:[4,9,15,10,13] },
+  { id:18, brand:'New Balance', line:'Control', name:'442 v2 Pro', rating:4.1, ratings:134, weight:'220g', soleplate:'FG', fit:'Wide', upper:'Premium Leather', year:2023, desc:'New Balance\'s premium leather offering provides a wide, comfortable fit with traditional leather touch. Heritage aesthetics with modern sole technology.', tags:['FG','Leather','Wide','220g'], pros:['Excellent comfort','Wide fit','Heritage styling'], cons:['Heavy weight','Limited availability','Niche appeal'], img:'https://i.imgur.com/nWmgdwE.png', color:'teal', similar:[6,7,11,16,20] },
+  { id:19, brand:'Adidas', line:'Power', name:'Predator Accuracy.1 Low', rating:3.9, ratings:224, weight:'220g', soleplate:'FG', fit:'Standard', upper:'Primeknit+Rubber', year:2023, desc:'Low-cut version of the Predator for players who prefer less ankle restriction. All the control benefits of the full collar version in a more conventional cut.', tags:['FG','Low Cut','220g','Control'], pros:['Control rubber zones','Low cut freedom','Classic Predator look'], cons:['Rubber zones add weight','Durability issues','Expensive'], img:'https://i.imgur.com/QNxdJHr.png', color:'red-black', similar:[3,6,16,22,25] },
+  { id:20, brand:'Mizuno', line:'Control', name:'Morelia II Club', rating:4.0, ratings:89, weight:'195g', soleplate:'FG', fit:'Standard', upper:'Leather', year:2023, desc:'More accessible entry into the Morelia range. Japanese craftsmanship with a more affordable leather construction, suitable for players wanting quality without the top-end price.', tags:['FG','Leather','195g','Value'], pros:['Japanese quality','Good leather touch','Reasonable price'], cons:['Not as premium as Neo IV','Less refined','Harder to find'], img:'https://i.imgur.com/HfpFMmB.png', color:'blue', similar:[6,7,11,14,16] },
+  { id:21, brand:'Umbro', line:'Control', name:'Tocco Pro', rating:3.8, ratings:78, weight:'210g', soleplate:'FG', fit:'Wide', upper:'Leather', year:2023, desc:'Umbro\'s leather control boot targeting traditional players. Wide fitting with soft leather touch, the Tocco Pro is ideal for the purist who values touch over speed.', tags:['FG','Leather','Wide','210g'], pros:['Classic look','Wide fit option','Solid leather touch'], cons:['Heavy','Niche brand','Limited tech'], img:'https://i.imgur.com/nWmgdwE.png', color:'navy', similar:[6,7,16,18,20] },
+  { id:22, brand:'Adidas', line:'Power', name:'Predator Elite Low', rating:4.1, ratings:167, weight:'210g', soleplate:'FG/AG', fit:'Low Cut', upper:'Primeknit+Rubber', year:2024, desc:'The latest Predator Elite in low-cut form. Packed with rubber control zones across the upper providing grip on every touch, now with an updated Hybrid Touch outsole.', tags:['FG/AG','Low Cut','210g','New 2024'], pros:['Maximum control','FG/AG versatility','Updated outsole'], cons:['Weight from rubber zones','Wide feet may struggle','Bold design'], img:'https://i.imgur.com/QNxdJHr.png', color:'black', similar:[3,19,6,16,25] },
+  { id:23, brand:'Puma', line:'Control', name:'King Ultimate', rating:4.4, ratings:112, weight:'195g', soleplate:'FG', fit:'Wide', upper:'Premium K-Leather', year:2024, desc:'The revived King silhouette at its absolute best. Premium full-grain kangaroo leather over a modern carbon-fibre plate delivers an unmatched combination of feel and performance.', tags:['FG','K-Leather','Carbon','Wide'], pros:['World-class leather feel','Modern carbon plate','Iconic styling'], cons:['Very expensive','Leather maintenance required','Heavy relative to speed boots'], img:'https://i.imgur.com/tLBpVN7.png', color:'cream', similar:[6,7,11,14,16] },
+  { id:24, brand:'Nike', line:'Control', name:'Premier 3', rating:4.2, ratings:198, weight:'230g', soleplate:'FG', fit:'Wide', upper:'Full Grain Leather', year:2023, desc:'Nike\'s full-grain leather option for touch-focused players. The Premier 3 uses classic construction with a padded tongue and wide toe box for maximum touch and comfort.', tags:['FG','Full Grain Leather','Wide','230g'], pros:['Best touch in Nike range','Wide comfortable fit','Classic aesthetic'], cons:['Very heavy','No modern tech','Conservative styling'], img:'https://i.imgur.com/nWmgdwE.png', color:'white', similar:[6,7,11,16,18] },
+  { id:25, brand:'Adidas', line:'Control', name:'Copa Pure II.1', rating:4.3, ratings:267, weight:'205g', soleplate:'FG', fit:'Wide', upper:'Leather+Composite', year:2024, desc:'The latest Copa combines premium leather touch with synthetic durability reinforcements. A water-resistant coating on the leather preserves touch in wet conditions unlike previous generations.', tags:['FG','Leather','Water Resistant','205g'], pros:['Water resistant leather','Excellent touch','Durable construction'], cons:['Compromise feel vs pure leather','Heavier than speed boots','Wide only'], img:'https://i.imgur.com/nWmgdwE.png', color:'tan', similar:[6,3,7,11,19] },
+  { id:26, brand:'Under Armour', line:'Speed', name:'Magnetico Pro 3', rating:3.7, ratings:134, weight:'190g', soleplate:'FG', fit:'Standard', upper:'Knitted', year:2023, desc:'Under Armour\'s premium offering aims to compete with the big three. Lightweight knitted upper with ClutchFit technology provides adaptive support through dynamic movements.', tags:['FG','190g','ClutchFit','UA'], pros:['Innovative ClutchFit','Good for wide players','Different aesthetic'], cons:['Not as refined as Nike/Adidas','Harder to find','Limited pro visibility'], img:'https://i.imgur.com/vP9Ky8Q.png', color:'blue', similar:[10,13,8,2,5] },
+  { id:27, brand:'Lotto', line:'Control', name:'Stadio 300 II', rating:3.6, ratings:67, weight:'240g', soleplate:'FG', fit:'Wide', upper:'Leather', year:2022, desc:'Italian craftsmanship in a traditionally styled leather boot. The Stadio 300 II is a cult favourite among players seeking European leather quality at a lower price point.', tags:['FG','Italian Leather','Wide','240g'], pros:['Italian leather quality','Wide comfortable fit','Cult favourite'], cons:['Very heavy','Limited retail presence','No modern features'], img:'https://i.imgur.com/nWmgdwE.png', color:'black', similar:[6,7,11,18,21] },
+  { id:28, brand:'Nike', line:'Power', name:'Phantom Luna II Elite', rating:4.0, ratings:178, weight:'195g', soleplate:'FG', fit:'Standard', upper:'Flyknit', year:2024, desc:'Nike\'s latest precision boot designed around the triangle touch zone concept. Multi-directional stud pattern supports quick directional changes for creative players.', tags:['FG','195g','Triangle Touch','Creative'], pros:['Excellent close control','Innovative touch zones','Modern aesthetic'], cons:['Unusual feel initially','Niche positioning','Relatively new, unproven durability'], img:'https://i.imgur.com/HfpFMmB.png', color:'purple', similar:[1,3,6,11,25] },
+  { id:29, brand:'Puma', line:'Speed', name:'Ultra 5 Ultimate', rating:4.0, ratings:145, weight:'180g', soleplate:'FG/AG', fit:'Standard', upper:'evoKNIT', year:2024, desc:'Updated Ultra range with new evoKNIT upper and revised SpeedUnit AG-compatible outsole. One of the few elite speed boots equally suited to firm ground and artificial grass.', tags:['FG/AG','180g','AG Compatible','2024'], pros:['FG/AG versatility','Lightweight at 180g','Updated evoKNIT'], cons:['Plain aesthetic','Less refined than Vapor','Narrow fit'], img:'https://i.imgur.com/Lbd8XlK.png', color:'black-gold', similar:[2,4,5,8,13] },
+  { id:30, brand:'Adidas', line:'Control', name:'Predator Pro GK', rating:4.0, ratings:56, weight:'240g', soleplate:'FG', fit:'Standard', upper:'Primeknit+Rubber', year:2023, desc:'Goalkeeper-specific Predator with extra rubber grip zones on the outer foot for enhanced ball control in the penalty area. Low-cut design for goalkeepers who prefer agility.', tags:['GK','FG','240g','GK Spec'], pros:['GK-specific grip zones','Low cut agility','Predator control DNA'], cons:['Heavy for GK','Not for outfield use','Niche product'], img:'https://i.imgur.com/QNxdJHr.png', color:'green', similar:[3,19,22,16,7] },
+  { id:31, brand:'Nike', line:'Speed', name:'Air Zoom Mercurial Superfly 9', rating:4.0, ratings:234, weight:'190g', soleplate:'FG', fit:'Dynamic Fit', upper:'Flyknit', year:2022, desc:'The Air Zoom generation brought responsive cushioning to speed boots for the first time. Zoom Air unit in the forefoot reduces fatigue during high-intensity runs while maintaining sprint capability.', tags:['FG','Air Zoom','190g','Cushioning'], pros:['Responsive cushioning','Speed meets comfort','Proven Flyknit upper'], cons:['Slightly heavier than non-zoom','Cushioning splits opinion','Previous generation'], img:'https://i.imgur.com/vP9Ky8Q.png', color:'volt', similar:[2,5,12,1,4] },
+  { id:32, brand:'Adidas', line:'Speed', name:'X 19+ Laceless', rating:3.8, ratings:189, weight:'195g', soleplate:'FG', fit:'Laceless', upper:'Primeknit', year:2019, desc:'A classic generation of Adidas speed. Laceless construction gives an uninterrupted touch surface while the Primeknit upper provides excellent adaptive fit.', tags:['FG','Laceless','195g','Old Gen'], pros:['Clean laceless surface','Good Primeknit upper','Still competitive'], cons:['Old technology now','Soleplate outdated','Hard to find new'], img:'https://i.imgur.com/Lbd8XlK.png', color:'orange', similar:[4,15,17,9,13] },
+  { id:33, brand:'New Balance', line:'Speed', name:'Tekela v4 Pro', rating:3.9, ratings:112, weight:'185g', soleplate:'FG/MG', fit:'Standard', upper:'Knitted', year:2023, desc:'New Balance\'s creative player boot with an asymmetric lacing system that expands the strike zone. The v4 features an updated last for improved width across sizes.', tags:['FG/MG','185g','Asymmetric','Creative'], pros:['Clean strike zone','Good width options','Asymmetric lacing works'], cons:['Unusual lacing takes getting used to','Niche appeal','Limited premium feel'], img:'https://i.imgur.com/TiHoSiZ.png', color:'dark-teal', similar:[10,8,28,1,26] },
+  { id:34, brand:'Puma', line:'Speed', name:'evoPOWER Vigor', rating:3.6, ratings:78, weight:'230g', soleplate:'FG', fit:'Wide', upper:'Microfibre', year:2020, desc:'Older power boot from Puma targeting strikers. GripTex zones provide enhanced power transfer on shots while the wide fit accommodates various foot shapes.', tags:['FG','Wide','Power','230g'], pros:['Power shooting zones','Wide fit','Affordable now'], cons:['Very heavy','Old technology','Microfibre wears fast'], img:'https://i.imgur.com/tLBpVN7.png', color:'red', similar:[7,23,18,24,30] },
+  { id:35, brand:'Mizuno', line:'Speed', name:'Rebula Cup Elite', rating:4.1, ratings:95, weight:'175g', soleplate:'FG', fit:'Standard', upper:'Kangaroo Leather', year:2022, desc:'Mizuno combines speed and leather in the Rebula Cup. Ultra-lightweight K-leather construction results in one of the lightest natural material boots available, bridging the gap between speed and touch.', tags:['FG','K-Leather','175g','Speed-Touch'], pros:['Lightweight leather hybrid','Excellent natural feel','Japanese precision'], cons:['Premium pricing','Hard to find','Leather care needed'], img:'https://i.imgur.com/HfpFMmB.png', color:'dark-blue', similar:[14,6,7,20,11] },
+  { id:36, brand:'Umbro', line:'Speed', name:'Velocita Pro', rating:3.5, ratings:56, weight:'195g', soleplate:'FG', fit:'Standard', upper:'Synthetic', year:2021, desc:'Umbro\'s speed offering with a synthetic upper and sprint-focused outsole. Budget-friendly speed boot for recreational players wanting pace without the premium price.', tags:['FG','Budget','195g','Synthetic'], pros:['Very affordable','Decent speed feel','Classic Umbro branding'], cons:['Basic synthetic upper','Poor durability','Not competitive at pro level'], img:'https://i.imgur.com/vP9Ky8Q.png', color:'navy', similar:[17,9,15,13,10] },
+  { id:37, brand:'Nike', line:'Control', name:'Phantom VSN 2 Elite', rating:4.0, ratings:156, weight:'200g', soleplate:'FG', fit:'Standard', upper:'Ghost Lace', year:2020, desc:'The predecessor to the Phantom GX. Ghost Lace system hides laces completely for an unobstructed strike zone. Off-center lacing creates a wider touch area.', tags:['FG','Ghost Lace','200g','Old Gen'], pros:['Huge touch zone','Ghost lace system','Still performs well'], cons:['Old generation','Heavier than GX','Less refined upper'], img:'https://i.imgur.com/HfpFMmB.png', color:'black', similar:[1,28,5,3,11] },
+  { id:38, brand:'Adidas', line:'Control', name:'Nemeziz Messi 19.1', rating:3.9, ratings:134, weight:'200g', soleplate:'FG', fit:'Agility', upper:'Primeknit Agility', year:2019, desc:'Designed around Messi\'s unique playing style. Agility bandage system provides multi-directional support during quick twists and turns. Unique construction unlike any other boot.', tags:['FG','Agility Bandage','200g','Messi'], pros:['Unique bandage support','Agility-focused design','Iconic Messi edition'], cons:['Complex construction','Durability issues','Discontinued line'], img:'https://i.imgur.com/Lbd8XlK.png', color:'orange-black', similar:[1,3,4,28,19] },
+  { id:39, brand:'Puma', line:'Control', name:'evoTOUCH Pro', rating:3.8, ratings:89, weight:'220g', soleplate:'FG', fit:'Wide', upper:'K-Leather', year:2018, desc:'Classic Puma leather touch boot. Premium kangaroo leather with minimal design language. The evoTOUCH Pro was Puma\'s flagship control boot before the King revival.', tags:['FG','K-Leather','Wide','Classic'], pros:['Premium K-Leather','Wide fit','Classic Puma DNA'], cons:['Old technology','Heavy','Replaced by King line'], img:'https://i.imgur.com/tLBpVN7.png', color:'black', similar:[7,23,6,16,20] },
+  { id:40, brand:'Under Armour', line:'Control', name:'Clone Magnetico Pro 2', rating:3.7, ratings:78, weight:'205g', soleplate:'FG', fit:'Standard', upper:'Microfibre', year:2020, desc:'Under Armour\'s control boot with UA Zone technology providing grip and control zones across the strike face. Lightweight for a control boot with a modern look.', tags:['FG','UA Zone','205g','Control'], pros:['UA Zone grip works','Modern aesthetic','Good overall balance'], cons:['Less known brand','Limited pro endorsement','Fewer colorways'], img:'https://i.imgur.com/QNxdJHr.png', color:'black', similar:[26,3,19,22,28] },
+  { id:41, brand:'Nike', line:'Speed', name:'Hypervenom Phantom 3', rating:3.9, ratings:212, weight:'190g', soleplate:'FG', fit:'Standard', upper:'Flyknit', year:2017, desc:'Classic Hypervenom generation that defined a decade of Nike creativity boots. NikeSkin coating over Flyknit provided a unique textured touch that was ahead of its time.', tags:['FG','Classic','190g','NikeSkin'], pros:['Iconic design','NikeSkin texture','Lightweight Flyknit'], cons:['Very old now','Discontinued','Hard to find'], img:'https://i.imgur.com/HfpFMmB.png', color:'orange', similar:[1,28,37,38,5] },
+  { id:42, brand:'Adidas', line:'Power', name:'Predator 18+ InstaSock', rating:3.8, ratings:145, weight:'215g', soleplate:'FG', fit:'Collar', upper:'Primeknit+Controlskin', year:2018, desc:'The Controlskin rubber patches on this Predator generation were groundbreaking. InstaSock collar created a glove-like fit around the ankle for premium lockdown.', tags:['FG','InstaSock','Controlskin','Classic'], pros:['Controlskin pioneered grip','InstaSock ankle fit','Classic Predator look'], cons:['Old technology','Heavy','Discontinued'], img:'https://i.imgur.com/QNxdJHr.png', color:'black-red', similar:[3,19,22,30,38] },
+  { id:43, brand:'Puma', line:'Speed', name:'evoSPEED 1.4 Tricks', rating:3.7, ratings:98, weight:'180g', soleplate:'FG', fit:'Standard', upper:'evoKNIT', year:2016, desc:'A classic Puma speed edition in bold Tricks colorway. The evoKNIT upper and GripTex soleplate provide a balanced speed and control package that defined the mid-2010s Puma aesthetic.', tags:['FG','Tricks','180g','evoKNIT'], pros:['Bold Tricks colorway','Good evoKNIT fit','Historical significance'], cons:['Very old tech','Discontinued','Collector value only'], img:'https://i.imgur.com/Lbd8XlK.png', color:'pink-black', similar:[8,13,29,7,34] },
+  { id:44, brand:'New Balance', line:'Power', name:'Visaro 2.0 Pro', rating:3.6, ratings:67, weight:'225g', soleplate:'FG', fit:'Wide', upper:'Microfibre', year:2018, desc:'New Balance\'s power boot from the early Visaro era. Designed for power strikers with a wider last and reinforced strike zone for maximum shot power.', tags:['FG','Power','Wide','225g'], pros:['Wide power fit','Reinforced strike zone','NB quality'], cons:['Old generation','Heavy','Discontinued'], img:'https://i.imgur.com/TiHoSiZ.png', color:'red', similar:[34,18,10,26,33] },
+  { id:45, brand:'Diadora', line:'Control', name:'Brasil Elite 2 R', rating:4.3, ratings:89, weight:'180g', soleplate:'FG', fit:'Wide', upper:'Kangaroo Leather', year:2023, desc:'Italy\'s hidden gem. The Brasil Elite 2 features premium kangaroo leather at a significantly lower price than the major brands. Wide fitting with excellent Italian craftsmanship.', tags:['FG','K-Leather','Wide','Italian'], pros:['Excellent value for leather','Wide comfortable fit','Italian quality underrated'], cons:['Very niche','Minimal distribution','No tech innovation'], img:'https://i.imgur.com/HfpFMmB.png', color:'dark-blue', similar:[6,7,14,20,27] },
+  { id:46, brand:'Pantofola d\'Oro', line:'Control', name:'Lazzarini Tongue FG', rating:4.5, ratings:45, weight:'195g', soleplate:'FG', fit:'Wide', upper:'Kangaroo Leather', year:2023, desc:'Italian artisan leather boot made in small quantities. Handstitched kangaroo leather upper with a traditional tongue construction. The Lazzarini is arguably the finest feeling leather boot available for those who can find it.', tags:['FG','Handstitched','K-Leather','Artisan'], pros:['Handstitched Italian quality','Unmatched leather feel','Exclusive rarity'], cons:['Extremely hard to find','Very expensive','No modern tech'], img:'https://i.imgur.com/nWmgdwE.png', color:'tan', similar:[6,14,16,45,27] },
+  { id:47, brand:'Concave', line:'Power', name:'Halo Pro', rating:3.9, ratings:56, weight:'240g', soleplate:'FG', fit:'Standard', upper:'Microfibre', year:2022, desc:'Australian brand Concave features a unique curved upper surface on the strike face, channeling the ball during kicks for improved accuracy and power. A genuinely innovative concept.', tags:['FG','Curved Upper','Power','Innovation'], pros:['Genuinely innovative design','Improved shooting accuracy','Unique to Concave'], cons:['Very heavy','Takes time to adapt','Niche brand'], img:'https://i.imgur.com/QNxdJHr.png', color:'black', similar:[3,7,34,19,30] },
+  { id:48, brand:'Hummel', line:'Control', name:'Slimmer Stadil Firm', rating:3.8, ratings:67, weight:'210g', soleplate:'FG', fit:'Wide', upper:'Full Grain Leather', year:2022, desc:'Danish brand Hummel offers a premium leather boot with Scandinavian minimalist aesthetics. Full grain leather upper provides a clean touch surface and molds naturally over time.', tags:['FG','Danish','Full Grain','Wide'], pros:['Scandinavian minimalist look','Quality leather','Wide fit'], cons:['Niche brand','Limited distribution','No modern performance tech'], img:'https://i.imgur.com/nWmgdwE.png', color:'dark-blue', similar:[6,7,18,21,45] },
+  { id:49, brand:'Kelme', line:'Speed', name:'Star 360 FG', rating:3.4, ratings:123, weight:'220g', soleplate:'FG/MG', fit:'Standard', upper:'Synthetic', year:2023, desc:'Spanish brand Kelme provides an affordable entry-level speed boot popular in youth academies. Basic construction but good value for developing players with limited budgets.', tags:['FG/MG','Budget','220g','Youth'], pros:['Very affordable','Good for youth players','Decent durability'], cons:['Basic construction','Poor touch','Heavy for speed boot'], img:'https://i.imgur.com/Lbd8XlK.png', color:'blue', similar:[17,36,9,15,10] },
+  { id:50, brand:'Asics', line:'Speed', name:'DS Light Japan', rating:4.1, ratings:78, weight:'160g', soleplate:'FG', fit:'Standard', upper:'Microfibre', year:2023, desc:'Japan\'s best kept football secret. Asics DS Light Japan is assembled by hand in Kobe and weighs just 160g — the lightest boot in this list. Japanese craftsmanship at its finest in a speed package.', tags:['FG','160g','Japan','Lightest'], pros:['World lightest at 160g','Exceptional Japanese quality','Unique offering'], cons:['Not widely available outside Japan','Very expensive import','No leather touch'], img:'https://i.imgur.com/vP9Ky8Q.png', color:'white-silver', similar:[4,14,35,2,13] },
+];
+
+// ============================================================
+// VOTE STATE
+// ============================================================
+let currentBootId = null;
+let currentVoteCategory = null;
+let currentVoteOptions = null;
+let selectedVoteOption = null;
+
+const defaultVotes = {
+  comfort: { 'very low':3,'low':12,'medium':48,'high':84,'very high':60 },
+  fit: { 'too narrow':71,'narrow':54,'true to size':36,'wide':9,'too wide':3 },
+  durability: { 'very low':48,'low':66,'medium':42,'high':18,'very high':6 },
+  upperThickness: { 'paper thin':84,'thin':60,'medium':24,'thick':9,'padded':3 }
+};
+
+function getVotes(bootId) {
+  const key = 'bootbase_votes_' + bootId;
+  try { return JSON.parse(localStorage.getItem(key)) || JSON.parse(JSON.stringify(defaultVotes)); }
+  catch { return JSON.parse(JSON.stringify(defaultVotes)); }
+}
+function saveVotes(bootId, votes) {
+  const key = 'bootbase_votes_' + bootId;
+  try { localStorage.setItem(key, JSON.stringify(votes)); } catch {}
+}
+
+// ============================================================
+// BOOT IMAGE - use inline SVG placeholders with brand color
+// ============================================================
+const brandColors = {
+  'Nike':'#FF6B00','Adidas':'#000','Puma':'#E40520','New Balance':'#00563F',
+  'Mizuno':'#005AA0','Umbro':'#CC0000','Under Armour':'#1C69D4','Lotto':'#009639',
+  'Diadora':'#003DA5','Pantofola d\'Oro':'#8B6914','Concave':'#111','Hummel':'#0A5695',
+  'Kelme':'#E30613','Asics':'#003DA5'
+};
+// Unique SVG boot silhouette per style category — ensures uniform, beautiful placeholders
+function bootImgHTML(boot, cls='') {
+  const color = brandColors[boot.brand] || '#888';
+  const line = boot.line;
+  // Each line gets a distinctive SVG shape: Speed=sleek low profile, Control=rounded toe, Power=wide toe
+  const svgs = {
+    Speed: `<svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" style="width:85%;height:85%">
+      <defs><linearGradient id="sg${boot.id}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${color}" stop-opacity="0.9"/><stop offset="100%" stop-color="${color}" stop-opacity="0.4"/></linearGradient></defs>
+      <path d="M8,55 Q15,30 35,28 Q55,26 80,30 Q100,32 112,42 L110,55 Q95,60 70,62 Q45,64 20,60 Z" fill="url(#sg${boot.id})"/>
+      <ellipse cx="25" cy="58" rx="12" ry="6" fill="${color}" opacity="0.6"/>
+      <ellipse cx="90" cy="56" rx="18" ry="5" fill="${color}" opacity="0.5"/>
+      <path d="M35,28 Q38,18 48,16 L55,16 Q52,24 50,28" fill="${color}" opacity="0.7"/>
+      <line x1="60" y1="30" x2="58" y2="22" stroke="${color}" stroke-width="1.5" opacity="0.4"/>
+      <line x1="70" y1="31" x2="69" y2="23" stroke="${color}" stroke-width="1.5" opacity="0.4"/>
+      <line x1="80" y1="33" x2="80" y2="25" stroke="${color}" stroke-width="1.5" opacity="0.4"/>
+    </svg>`,
+    Control: `<svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" style="width:85%;height:85%">
+      <defs><linearGradient id="cg${boot.id}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${color}" stop-opacity="0.9"/><stop offset="100%" stop-color="${color}" stop-opacity="0.4"/></linearGradient></defs>
+      <path d="M10,52 Q15,28 40,26 Q60,24 82,28 Q102,32 112,44 L108,55 Q90,62 65,64 Q38,66 18,60 Z" fill="url(#cg${boot.id})"/>
+      <ellipse cx="28" cy="57" rx="14" ry="7" fill="${color}" opacity="0.55"/>
+      <ellipse cx="88" cy="55" rx="16" ry="5" fill="${color}" opacity="0.45"/>
+      <path d="M40,26 Q42,14 54,12 L62,12 Q58,20 56,26" fill="${color}" opacity="0.75"/>
+      <path d="M56,26 Q70,22 84,26" stroke="${color}" stroke-width="2" fill="none" opacity="0.5"/>
+    </svg>`,
+    Power: `<svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" style="width:85%;height:85%">
+      <defs><linearGradient id="pg${boot.id}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${color}" stop-opacity="0.9"/><stop offset="100%" stop-color="${color}" stop-opacity="0.4"/></linearGradient></defs>
+      <path d="M12,50 Q16,24 45,22 Q68,20 86,26 Q104,32 114,46 L110,57 Q90,65 62,67 Q36,69 18,62 Z" fill="url(#pg${boot.id})"/>
+      <ellipse cx="32" cy="60" rx="16" ry="8" fill="${color}" opacity="0.6"/>
+      <ellipse cx="88" cy="57" rx="18" ry="6" fill="${color}" opacity="0.5"/>
+      <path d="M45,22 Q46,10 60,8 L70,8 Q65,16 63,22" fill="${color}" opacity="0.75"/>
+      <rect x="52" y="32" width="30" height="3" rx="1.5" fill="${color}" opacity="0.35"/>
+      <rect x="50" y="38" width="32" height="2" rx="1" fill="${color}" opacity="0.25"/>
+    </svg>`
+  };
+  const svgContent = svgs[line] || svgs['Speed'];
+  return `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.06))">${svgContent}</div>`;
+}
+
+// ============================================================
+// FLOATING TEXTURE
+// ============================================================
+function createFloatingTexture() {
+  const container = document.getElementById('floatTexture');
+  const emojis = ['👟','⚽','🥅','👟','⚽'];
+  for (let i = 0; i < 20; i++) {
+    const el = document.createElement('div');
+    el.className = 'float-boot';
+    el.textContent = emojis[i % emojis.length];
+    el.style.cssText = `left:${Math.random()*100}%;animation-duration:${15+Math.random()*25}s;animation-delay:${-Math.random()*30}s;--rot:${Math.random()*360}deg;font-size:${20+Math.random()*30}px`;
+    container.appendChild(el);
+  }
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  const tabs = {'login':0,'home':1,'boot':2,'ratings':3};
+  document.querySelectorAll('.nav-tab')[tabs[page]].classList.add('active');
+  if (page==='home') {
+    const titleEl = document.getElementById('gridTitle');
+    if (titleEl) titleEl.textContent = 'All Boots';
+    renderBootGrid(getFilteredBoots());
+  }
+}
+
+function doLogin() { showPage('home'); }
+
+// ============================================================
+// HOME — BOOT GRID
+// ============================================================
+let currentFilter = 'all';
+let currentSort = 'default';
+let currentSearch = '';
+
+function getFilteredBoots() {
+  let boots = BOOTS.filter(b => {
+    const matchFilter = currentFilter === 'all' || b.line === currentFilter;
+    const matchSearch = !currentSearch || 
+      b.name.toLowerCase().includes(currentSearch) ||
+      b.brand.toLowerCase().includes(currentSearch) ||
+      b.tags.some(t=>t.toLowerCase().includes(currentSearch));
+    return matchFilter && matchSearch;
+  });
+  if (currentSort === 'rating_desc') boots = [...boots].sort((a,b)=>b.rating-a.rating);
+  else if (currentSort === 'rating_asc') boots = [...boots].sort((a,b)=>a.rating-b.rating);
+  else if (currentSort === 'weight_asc') boots = [...boots].sort((a,b)=>parseInt(a.weight)-parseInt(b.weight));
+  else if (currentSort === 'name_asc') boots = [...boots].sort((a,b)=>a.name.localeCompare(b.name));
+  return boots;
+}
+
+function applyFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBootGrid(getFilteredBoots());
+}
+
+function applySort() {
+  currentSort = document.getElementById('sortSelect').value;
+  renderBootGrid(getFilteredBoots());
+}
+
+function renderBootGrid(boots) {
+  const grid = document.getElementById('bootGrid');
+  const countEl = document.getElementById('bootCount');
+  if (countEl) countEl.textContent = boots.length + ' boots';
+  grid.innerHTML = boots.map(boot => `
+    <div class="boot-card" onclick="openBoot(${boot.id})">
+      <div class="boot-img-wrap">${bootImgHTML(boot)}</div>
+      <div class="boot-info">
+        <div class="boot-brand">${boot.brand} · ${boot.line}</div>
+        <div class="boot-name">${boot.name}</div>
+        <div class="boot-rating">
+          <span class="rating-num">${boot.rating}</span>
+          <div class="rating-bar"><div class="rating-fill" style="width:${boot.rating/5*100}%"></div></div>
+          <span style="font-size:10px;color:var(--muted2)">${boot.ratings}</span>
+        </div>
+        <div class="boot-tags">${boot.tags.slice(0,2).map(t=>`<span class="boot-tag">${t}</span>`).join('')}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function handleSearch(val) {
+  const results = document.getElementById('searchResults');
+  currentSearch = val.trim().toLowerCase();
+  if (!val.trim()) { results.style.display='none'; return; }
+  const matches = BOOTS.filter(b =>
+    b.name.toLowerCase().includes(currentSearch) ||
+    b.brand.toLowerCase().includes(currentSearch) ||
+    b.tags.some(t=>t.toLowerCase().includes(currentSearch))
+  ).slice(0,6);
+  if (!matches.length) { results.style.display='none'; return; }
+  results.innerHTML = matches.map(b=>`
+    <div class="search-result-item" onclick="openBoot(${b.id}); document.getElementById('searchResults').style.display='none'">
+      <div class="search-result-img">${bootImgHTML(b)}</div>
+      <div class="search-result-info">
+        <div class="search-result-brand">${b.brand}</div>
+        <div class="search-result-name">${b.name}</div>
+      </div>
+    </div>
+  `).join('');
+  results.style.display='block';
+}
+
+document.addEventListener('click', e => {
+  if (!document.getElementById('searchWrap').contains(e.target)) {
+    document.getElementById('searchResults').style.display='none';
+  }
+});
+
+function filterBoots(query) {
+  currentSearch = query.toLowerCase();
+  document.getElementById('searchInput').value = query;
+  document.getElementById('gridTitle').textContent = 'Search: ' + query;
+  renderBootGrid(getFilteredBoots());
+  showPage('home');
+}
+
+// ============================================================
+// BOOT DETAIL PAGE
+// ============================================================
+function openBoot(id) {
+  currentBootId = id;
+  const boot = BOOTS.find(b=>b.id===id);
+  const detail = document.getElementById('bootDetail');
+  detail.innerHTML = `
+    <button class="back-btn" onclick="showPage('home')">← Back to catalogue</button>
+    <div class="boot-detail-header">
+      <div class="boot-detail-img">${bootImgHTML(boot,'boot-detail-img-inner')}</div>
+      <div>
+        <div class="boot-category">${boot.brand} · ${boot.line}</div>
+        <div class="boot-detail-name">${boot.name}</div>
+        <div class="boot-detail-rating">
+          <span class="big-rating">${boot.rating}</span>
+          <div>
+            <div style="color:var(--lime);font-size:14px">/ 5</div>
+            <div class="rating-context">${boot.ratings} ratings</div>
+          </div>
+        </div>
+        <p class="boot-detail-desc">${boot.desc}</p>
+        <div class="detail-tags">${boot.tags.map(t=>`<span class="detail-tag">${t}</span>`).join('')}</div>
+        <button class="add-review-btn" onclick="openAddReview()">+ add review</button>
+      </div>
+    </div>
+    <div class="pros-cons">
+      <div class="pc-box pros">
+        <div class="pc-title">Pros</div>
+        <ul class="pc-list">${boot.pros.map(p=>`<li>${p}</li>`).join('')}</ul>
+      </div>
+      <div class="pc-box cons">
+        <div class="pc-title">Cons</div>
+        <ul class="pc-list">${boot.cons.map(c=>`<li>${c}</li>`).join('')}</ul>
+      </div>
+    </div>
+    <p style="color:var(--muted);font-size:13px;text-align:center;margin-top:8px">Similar boots → scroll on tab ④</p>
+  `;
+  document.getElementById('bootTabBtn').style.display='block';
+  document.getElementById('ratingsTabBtn').style.display='block';
+  document.getElementById('bootTabBtn').textContent='③ Boot page';
+  document.getElementById('ratingsTabBtn').textContent='④ Ratings + carousel';
+  renderRatingsPage(id);
+  showPage('boot');
+}
+
+function openAddReview() {
+  alert('Review system coming soon! For now use the voting buttons on the Ratings tab to share your experience.');
+}
+
+// ============================================================
+// RATINGS PAGE
+// ============================================================
+function renderRatingsPage(id) {
+  const boot = BOOTS.find(b=>b.id===id);
+  const votes = getVotes(id);
+  const wrap = document.getElementById('ratingsWrap');
+  const similar = (boot.similar || []).map(sid=>BOOTS.find(b=>b.id===sid)).filter(Boolean);
+
+  wrap.innerHTML = `
+    <button class="back-btn" onclick="showPage('boot')">← Back to boot page</button>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;margin-bottom:6px">${boot.name}</div>
+    <div class="ratings-title">Performance Ratings</div>
+    <div class="perf-grid">
+      ${renderPerfCard('Comfort', 'comfort', votes.comfort, ['very low','low','medium','high','very high'], 'comfort-fill', id)}
+      ${renderPerfCard('Fit', 'fit', votes.fit, ['too narrow','narrow','true to size','wide','too wide'], 'fit-fill', id)}
+      ${renderPerfCard('Durability', 'durability', votes.durability, ['very low','low','medium','high','very high'], 'durability-fill', id)}
+      ${renderPerfCard('Upper thickness', 'upperThickness', votes.upperThickness, ['paper thin','thin','medium','thick','padded'], 'thickness-fill', id)}
+    </div>
+    <div class="carousel-section">
+      <div class="carousel-title">People who like this also like</div>
+      <div class="carousel-wrap">
+        <button class="carousel-arrow left" onclick="scrollCarousel(-1)">‹</button>
+        <div class="carousel" id="similarCarousel">
+          ${similar.map(sb=>`
+            <div class="carousel-card" onclick="openBoot(${sb.id})">
+              <div class="carousel-card-img">${bootImgHTML(sb)}</div>
+              <div class="carousel-card-info">
+                <div class="carousel-card-brand">${sb.brand}</div>
+                <div class="carousel-card-name">${sb.name}</div>
+                <div style="color:var(--lime);font-family:'Space Mono',monospace;font-size:12px;margin-top:4px">${sb.rating}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <button class="carousel-arrow right" onclick="scrollCarousel(1)">›</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderPerfCard(title, category, data, options, fillClass, bootId) {
+  const total = Object.values(data).reduce((a,b)=>a+b,0);
+  const rows = options.map(opt => {
+    const val = data[opt] || 0;
+    const pct = total > 0 ? (val/total*100).toFixed(0) : 0;
+    return `<div class="bar-row">
+      <div class="bar-label">${opt}</div>
+      <div class="bar-track" onclick="openVoteModal('${category}','${opt}',${bootId})" title="Vote for ${opt}">
+        <div class="bar-fill ${fillClass}" id="bar_${category}_${opt.replace(/\s/g,'_')}_${bootId}" style="width:${pct}%"></div>
+      </div>
+      <div class="bar-count" id="cnt_${category}_${opt.replace(/\s/g,'_')}_${bootId}">${val}</div>
+    </div>`;
+  }).join('');
+  return `<div class="perf-card">
+    <div class="perf-card-title">${title}<button class="vote-btn" onclick="openVoteModal('${category}',null,${bootId})">+ vote</button></div>
+    ${rows}
+  </div>`;
+}
+
+function scrollCarousel(dir) {
+  const c = document.getElementById('similarCarousel');
+  if (c) c.scrollBy({ left: dir * 340, behavior:'smooth' });
+}
+
+// ============================================================
+// VOTE MODAL
+// ============================================================
+const voteOptionSets = {
+  comfort: ['very low','low','medium','high','very high'],
+  fit: ['too narrow','narrow','true to size','wide','too wide'],
+  durability: ['very low','low','medium','high','very high'],
+  upperThickness: ['paper thin','thin','medium','thick','padded']
+};
+const voteTitles = { comfort:'Rate Comfort', fit:'Rate Fit', durability:'Rate Durability', upperThickness:'Rate Upper Thickness' };
+
+function openVoteModal(category, preselect, bootId) {
+  currentVoteCategory = category;
+  currentBootId = bootId;
+  selectedVoteOption = preselect;
+  const options = voteOptionSets[category];
+  document.getElementById('voteModalTitle').textContent = voteTitles[category];
+  document.getElementById('voteOptions').innerHTML = options.map(opt=>`
+    <div class="vote-option" onclick="selectVoteOption('${opt}')">
+      <div class="vote-radio ${opt===preselect?'checked':''}" id="radio_${opt.replace(/\s/g,'_')}"></div>
+      <div class="vote-option-label">${opt}</div>
+    </div>
+  `).join('');
+  document.getElementById('voteModal').classList.add('open');
+}
+
+function selectVoteOption(opt) {
+  selectedVoteOption = opt;
+  document.querySelectorAll('.vote-radio').forEach(r=>r.classList.remove('checked'));
+  document.getElementById('radio_'+opt.replace(/\s/g,'_')).classList.add('checked');
+}
+
+function submitVote() {
+  if (!selectedVoteOption || !currentVoteCategory || !currentBootId) { alert('Please select an option'); return; }
+  const votes = getVotes(currentBootId);
+  votes[currentVoteCategory][selectedVoteOption] = (votes[currentVoteCategory][selectedVoteOption]||0) + 1;
+  saveVotes(currentBootId, votes);
+  closeVoteModal();
+  updateBarsLive(currentBootId);
+}
+
+function updateBarsLive(bootId) {
+  const votes = getVotes(bootId);
+  Object.keys(votes).forEach(cat => {
+    const data = votes[cat];
+    const total = Object.values(data).reduce((a,b)=>a+b,0);
+    Object.entries(data).forEach(([opt, val]) => {
+      const key = opt.replace(/\s/g,'_');
+      const bar = document.getElementById(`bar_${cat}_${key}_${bootId}`);
+      const cnt = document.getElementById(`cnt_${cat}_${key}_${bootId}`);
+      if (bar) bar.style.width = total > 0 ? (val/total*100).toFixed(0)+'%' : '0%';
+      if (cnt) cnt.textContent = val;
+    });
+  });
+}
+
+function closeVoteModal() {
+  document.getElementById('voteModal').classList.remove('open');
+  selectedVoteOption = null;
+}
+
+document.getElementById('voteModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('voteModal')) closeVoteModal();
+});
+
+// ============================================================
+// INIT
+// ============================================================
+createFloatingTexture();
+renderBootGrid(getFilteredBoots());
+</script>
+</body>
+</html>
